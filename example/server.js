@@ -4,9 +4,20 @@ var path = require('path');
 var fs = require('fs');
 var util = require('util');
 var express = require('express');
+var multipart = require('connect-multiparty');
+//var connect = require('connect');
+
+var bodyParser = require('body-parser');
+
 
 var app = express();
-app.use(express.bodyParser());
+//app.use(express.bodyParser());
+//app.use(connect.urlencoded())
+//app.use(connect.json())
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+// parse application/json
+app.use(bodyParser.json())
 
 app.engine('html', require('ejs').renderFile);
 app.set('views', __dirname);
