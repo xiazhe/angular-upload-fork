@@ -16,14 +16,27 @@ angular.module('lr.upload.directives').directive('uploadButton', function(upload
     },
     link: function(scope, element, attr) {
 
+      scope.safeApply = function(fn) {
+        var phase = this.$root.$$phase;
+        if(phase === '$apply' || phase === '$digest') {
+          if(fn && (typeof(fn) === 'function')) {
+            fn();
+          }
+        } else {
+          this.$apply(fn);
+        }
+      };
+
       var el = angular.element(element);
-      var fileInput = angular.element('<input id="' + scope.id + '" type="file" />');
+      var fileInput = angular.element('<input id="' + scope.id + '" name="'+ scope.id +'" type="file" />');
+      //console.log(fileInput);
       el.append(fileInput);
 
-      fileInput.on('change', function uploadButtonFileInputChange() {
+      var _this = fileInput;
 
+      scope.$on('uploadSubmit', function(){
         // without this, iframeUpload always upload the first time picked file
-        var fileInput = angular.element(this);
+        var fileInput = angular.element(_this);
 
         if (fileInput[0].files && fileInput[0].files.length === 0) {
           return;
@@ -38,7 +51,7 @@ angular.module('lr.upload.directives').directive('uploadButton', function(upload
 
         options.data[scope.param || 'file'] = fileInput;
 
-        scope.$apply(function () {
+        scope.safeApply(function () {
           scope.onUpload({files: fileInput[0].files});
         });
 

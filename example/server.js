@@ -4,25 +4,14 @@ var path = require('path');
 var fs = require('fs');
 var util = require('util');
 var express = require('express');
-//var multipart = require('connect-multiparty');
-//var connect = require('connect');
 
-//var bodyParser = require('body-parser');
 
 
 var app = express();
 //app.use(express.bodyParser());
-//app.use(connect.urlencoded())
-//app.use(connect.json())
-// parse application/x-www-form-urlencoded
-//app.use(bodyParser.urlencoded({ extended: false }))
-// parse application/json
-//app.use(bodyParser.json())
-
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(require('connect-multiparty')());
-
 
 app.engine('html', require('ejs').renderFile);
 app.set('views', __dirname);
@@ -47,9 +36,11 @@ app.get('/uploads', function (req, res) {
 });
 
 app.post('/upload', function(req, res) {
+  //console.log(req);
+  //console.log(res.token);
   var files = util.isArray(req.files.file) ? req.files.file : [req.files.file];
 
-  console.log(files);
+  //console.log(files);
 
   files.forEach(function (file) {
     //fs.rename(file.path, path.resolve(uploadPath, file.name), function(err) {
@@ -58,14 +49,23 @@ app.post('/upload', function(req, res) {
     //    if (err) throw err;
     //  });
     //});
+    //fs.rename(path.resolve(uploadPath, file.name),path.resolve(uploadPath, new Date().getTime()+".jpg"));
+
+    var filename = new Date().getTime()+".jpg";
 
     var readStream = fs.createReadStream(file.path)
-    var writeStream = fs.createWriteStream(path.resolve(uploadPath, file.name));
+    //var writeStream = fs.createWriteStream(path.resolve(uploadPath, file.name));
+    var writeStream = fs.createWriteStream(path.resolve(uploadPath, filename));
+    //util.pump(readStream, writeStream, function() {
+    //  fs.unlinkSync(file.path);
+    //});
 
-    util.pump(readStream, writeStream, function() {
-      fs.unlinkSync(files.path);
+    readStream.pipe(writeStream);
+
+    readStream.on("end", function() {
+      // Operation done
+      console.log("end");
     });
-
   });
 
   // Force response type to text/html otherwise IE will try to open the returned json response.
@@ -83,7 +83,12 @@ var index = function (req, res) {
   res.render('index');
 }
 
+var form = function (req, res) {
+  res.render('form.html');
+}
+
 app.get('*', index);
 app.get('/', index);
+//app.get('/form', form);
 
 module.exports = app;
