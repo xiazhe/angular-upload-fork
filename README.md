@@ -4,6 +4,8 @@ Upload files using FormData, fall back to iframe upload when FormData isn't supp
  - Works in all browsers
  - Lightweight
  - No dependency on jQuery
+ - Support upload image preview
+ - Support IE 9
 
 ## Example
 ```html
