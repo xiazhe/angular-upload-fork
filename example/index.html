@@ -79,6 +79,7 @@
         app.controller('CustomCtrl', function ($scope) {
 
             $scope.forceIframeUpload = true;
+          $scope.fileData = null;
 
             // Valid mimetypes
             $scope.acceptTypes = 'image/*,application/pdf';
@@ -93,8 +94,14 @@
             };
 
             $scope.submit = function () {
-                $scope.$broadcast("uploadSubmit");
+                //$scope.$broadcast("uploadSubmit");
+              console.log($scope.fileData);
             };
+
+          $scope.fileChange = function(files){
+            console.log('fileChange', files);
+            $scope.fileData = files;
+          }
 
             $scope.onUpload = function (files) {
                 console.log('onUpload', files);
@@ -149,7 +156,6 @@
                 <h3 class="panel-title">Custom Example</h3>
             </div>
             <div class="panel-body">
-                <div>forceIframeUpload:{{forceIframeUpload}}</div>
                 <div class="form-group">
                     <upload-button class="btn btn-primary btn-upload"
                                    url="/upload"
@@ -159,12 +165,19 @@
                                    multiple="allowMultiple"
                                    force-iframe-upload="true"
                                    data="uploadData"
+                                   on-change ="fileChange(files)"
                                    on-upload="onUpload(files)"
                                    on-success="onGlobalSuccess(response)"
                                    on-error="onError(response)"
-                                   on-complete="onComplete(response)">
+                                   on-complete="onComplete(response)"
+                                   thumb-id="file-thumb"
+                      >
                         Fileupload
                     </upload-button>
+                  <upload-thumb file="fileData"
+                                url="https://www.google.com.hk/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png" thumb-id="file-thumb">
+
+                  </upload-thumb>
                 </div>
                 <div class="form-group"><button class="btn btn-primary" type="button" ng-click="submit()">Submit</button></div>
             </div>
@@ -223,5 +236,7 @@
             </div>
         </div>
     </div>
+    <div id="tp" style="width:200px;height:200px"></div>
+
 </body>
 </html>

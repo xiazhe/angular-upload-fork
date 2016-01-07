@@ -12,7 +12,10 @@ angular.module('lr.upload.directives').directive('uploadButton', function(upload
       onUpload: '&',
       onSuccess: '&',
       onError: '&',
-      onComplete: '&'
+      onComplete: '&',
+      onChange: '&',
+      thumbId: '@'
+
     },
     link: function(scope, element, attr) {
 
@@ -28,11 +31,33 @@ angular.module('lr.upload.directives').directive('uploadButton', function(upload
       };
 
       var el = angular.element(element);
-      var fileInput = angular.element('<input id="' + scope.id + '" name="'+ scope.id +'" type="file" />');
-      //console.log(fileInput);
+      var fileInput = angular.element('<input id="' + scope.uploadId + '" type="file" />');
       el.append(fileInput);
 
       var _this = fileInput;
+      var version = window.navigator.userAgent;
+      fileInput.on('change', function () {
+
+        if(version.substr(version.indexOf('MSIE') + 5, 1)==='9'){
+
+          var thumbDiv = angular.element(document.getElementById(scope.thumbId));
+          thumbDiv.html('&nbsp;');
+
+          var obj = fileInput[0];
+          obj.select();
+          obj.blur();
+          var imageurl = document.selection.createRange().text;
+          document.selection.empty();
+
+          document.getElementById(scope.thumbId).style.filter='progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod="image",src="'+imageurl+'")';
+
+        }else{
+          scope.safeApply(function () {
+            scope.onChange({files: fileInput[0].files});
+          });
+        }
+
+      });
 
       scope.$on('uploadSubmit', function(){
         // without this, iframeUpload always upload the first time picked file

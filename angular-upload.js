@@ -17,7 +17,10 @@ angular.module('lr.upload.directives').directive('uploadButton', function(upload
       onUpload: '&',
       onSuccess: '&',
       onError: '&',
-      onComplete: '&'
+      onComplete: '&',
+      onChange: '&',
+      thumbId: '@'
+
     },
     link: function(scope, element, attr) {
 
@@ -33,11 +36,33 @@ angular.module('lr.upload.directives').directive('uploadButton', function(upload
       };
 
       var el = angular.element(element);
-      var fileInput = angular.element('<input id="' + scope.id + '" name="'+ scope.id +'" type="file" />');
-      //console.log(fileInput);
+      var fileInput = angular.element('<input id="' + scope.uploadId + '" type="file" />');
       el.append(fileInput);
 
       var _this = fileInput;
+      var version = window.navigator.userAgent;
+      fileInput.on('change', function () {
+
+        if(version.substr(version.indexOf('MSIE') + 5, 1)==='9'){
+
+          var thumbDiv = angular.element(document.getElementById(scope.thumbId));
+          thumbDiv.html('&nbsp;');
+
+          var obj = fileInput[0];
+          obj.select();
+          obj.blur();
+          var imageurl = document.selection.createRange().text;
+          document.selection.empty();
+
+          document.getElementById(scope.thumbId).style.filter='progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod="image",src="'+imageurl+'")';
+
+        }else{
+          scope.safeApply(function () {
+            scope.onChange({files: fileInput[0].files});
+          });
+        }
+
+      });
 
       scope.$on('uploadSubmit', function(){
         // without this, iframeUpload always upload the first time picked file
@@ -97,6 +122,68 @@ angular.module('lr.upload.directives').directive('uploadButton', function(upload
         attr.$observe('multiple', uploadButtonMultipleObserve);
         attr.$observe('forceIframeUpload', uploadButtonMultipleObserve);
       }
+    }
+  };
+});
+
+/**
+ * Created by lucker.xia on 1/6/2016.
+ */
+'use strict';
+
+angular.module('lr.upload.directives').directive('uploadThumb', function() {
+  return {
+    restrict: 'EA',
+    scope: {
+      file: '=',
+      url: '@',
+      thumbId: '@'
+    },
+    link: function(scope, element) {
+      var el = angular.element(element);
+
+      var imageThumb = angular.element('<img class="coolead-image" src="_black" />');
+
+
+      if(scope.url){
+        imageThumb.attr('src', scope.url);
+      }
+
+      scope.$watch('url', function(){
+        imageThumb.attr('src', scope.url);
+      });
+
+      var divBox = angular.element('<div id="'+ scope.thumbId +'"></div>');
+
+      divBox.append(imageThumb);
+
+      el.append(divBox);
+
+      var version = window.navigator.userAgent;
+
+
+      scope.$watch('file',function(){
+          if(scope.file){
+            if(version.substr(version.indexOf('MSIE') + 5, 1) >= 9){
+              imageThumb.attr('src', 'file:\\\\'+document.selection.createRange().text);
+            }else if(version.substr(version.indexOf('MSIE') + 5, 1)==='9'){
+
+            }else{
+
+              var files = scope.file;
+
+              if(files&&files.length){
+                var reader = new FileReader();
+                reader.onload=function(e){
+                  imageThumb.attr('src', e.target.result);
+                };
+                reader.readAsDataURL(files[0]);
+              }
+            }
+
+          }
+        });
+
     }
   };
 });
