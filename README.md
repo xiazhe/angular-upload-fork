@@ -15,7 +15,13 @@ Upload files using FormData, fall back to iframe upload when FormData isn't supp
   url="/upload"
   on-success="onSuccess(response)"
 >Upload</div>
+
+<upload-thumb file="fileData"
+  url="https://www.google.com.hk/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png"
+  thumb-id="file-thumb">
+</upload-thumb>
 ```
+
 
 ## Install
 Install via bower
