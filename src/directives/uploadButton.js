@@ -41,18 +41,26 @@ angular.module('lr.upload.directives').directive('uploadButton', function(upload
       var _this = fileInput;
       fileInput.on('change', function () {
         if(version.substr(version.indexOf('MSIE') + 5, 1)==='9'){
+          if(scope.thumbId){
+            var thumbDiv = angular.element(document.getElementById(scope.thumbId));
+            thumbDiv.html('&nbsp;');
 
-          var thumbDiv = angular.element(document.getElementById(scope.thumbId));
-          thumbDiv.html('&nbsp;');
+            var obj = fileInput[0];
+            obj.select();
+            obj.blur();
+            var imageurl = document.selection.createRange().text;
+            document.selection.empty();
 
-          var obj = fileInput[0];
-          obj.select();
-          obj.blur();
-          var imageurl = document.selection.createRange().text;
-          document.selection.empty();
+            document.getElementById(scope.thumbId).style.filter='progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod="image",src="'+imageurl+'")';
+          }
 
-          document.getElementById(scope.thumbId).style.filter='progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod="image",src="'+imageurl+'")';
-
+          scope.safeApply(function(){
+            scope.onChange({files: fileInput[0].value});
+          });
+        }else{
+          scope.safeApply(function () {
+            scope.onChange({files: fileInput[0].files});
+          });
         }
 
         scope.safeApply(function () {

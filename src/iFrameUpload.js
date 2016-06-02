@@ -58,11 +58,14 @@ angular.module('lr.upload.iframe', []).factory('iFrameUpload', function ($q, $ht
     form.attr('method', config.method || 'POST');
     form.css('display', 'none');
 
-    if (files.length) {
-      form.attr('enctype', 'multipart/form-data');
-      // enctype must be set as encoding for IE:
-      form.attr('encoding', 'multipart/form-data');
-    }
+    //if (files.length) {
+    //  form.attr('enctype', 'multipart/form-data');
+    //  // enctype must be set as encoding for IE:
+    //  form.attr('encoding', 'multipart/form-data');
+    //}
+    form.attr('enctype', 'multipart/form-data');
+    // enctype must be set as encoding for IE:
+    form.attr('encoding', 'multipart/form-data');
 
     // Add iframe that we will post to
     var iframe = angular.element('<iframe name="' + uniqueName + '" src="javascript:false;"></iframe>');
