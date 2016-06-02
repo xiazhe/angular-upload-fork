@@ -19,6 +19,10 @@ angular.module('lr.upload.directives').directive('uploadButton', function(upload
     },
     link: function(scope, element, attr) {
 
+      //IE Version
+      var version = window.navigator.userAgent;
+
+
       scope.safeApply = function(fn) {
         var phase = this.$root.$$phase;
         if(phase === '$apply' || phase === '$digest') {
@@ -35,9 +39,7 @@ angular.module('lr.upload.directives').directive('uploadButton', function(upload
       el.append(fileInput);
 
       var _this = fileInput;
-      var version = window.navigator.userAgent;
       fileInput.on('change', function () {
-
         if(version.substr(version.indexOf('MSIE') + 5, 1)==='9'){
 
           var thumbDiv = angular.element(document.getElementById(scope.thumbId));
@@ -51,11 +53,14 @@ angular.module('lr.upload.directives').directive('uploadButton', function(upload
 
           document.getElementById(scope.thumbId).style.filter='progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod="image",src="'+imageurl+'")';
 
-        }else{
-          scope.safeApply(function () {
-            scope.onChange({files: fileInput[0].files});
-          });
         }
+
+        scope.safeApply(function () {
+          console.log(fileInput[0].value);
+          console.log(version.substr(version.indexOf('MSIE') + 5, 1));
+
+          scope.onChange({files: version.substr(version.indexOf('MSIE') + 5, 1) <= '9' ? fileInput[0].value : fileInput[0].files});
+        });
 
       });
 
@@ -77,7 +82,7 @@ angular.module('lr.upload.directives').directive('uploadButton', function(upload
         options.data[scope.param || 'file'] = fileInput;
 
         scope.safeApply(function () {
-          scope.onUpload({files: fileInput[0].files});
+          scope.onUpload({files: version.substr(version.indexOf('MSIE') + 5, 1)==='9' ? fileInput[0].value : fileInput[0].files});
         });
 
         upload(options).then(

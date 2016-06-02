@@ -51,9 +51,10 @@ app.post('/upload', function(req, res) {
     //});
     //fs.rename(path.resolve(uploadPath, file.name),path.resolve(uploadPath, new Date().getTime()+".jpg"));
 
-    var filename = new Date().getTime()+".jpg";
+    //var filename = new Date().getTime()+".jpg";
 
-    var readStream = fs.createReadStream(file.path)
+    var filename = file.name;
+    var readStream = fs.createReadStream(file.path);
     //var writeStream = fs.createWriteStream(path.resolve(uploadPath, file.name));
     var writeStream = fs.createWriteStream(path.resolve(uploadPath, filename));
     //util.pump(readStream, writeStream, function() {
