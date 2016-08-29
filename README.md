@@ -157,3 +157,5 @@ And when you're done minify it
 ```sh
 grunt package
 ```
+Webserver setting
+X-Frame-Options: SAMEORIGIN or ALLOW-FROM uri
